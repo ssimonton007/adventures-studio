@@ -20,4 +20,31 @@ public partial class DreamJourneyFootStepDetail
 
     private string CustomizePath =>
         $"{PlannerPath}?journeyFootStep={Uri.EscapeDataString(Template.VersionId.TemplateId)}";
+
+    private IReadOnlyList<AdventureTemplateDay> PreviewDays => Template.Days
+        .OrderBy(day => day.DayOffset)
+        .Take(6)
+        .ToArray();
+
+    private string TravelStyle => Template.Transportation.Count == 0
+        ? "Flexible"
+        : string.Join(" + ", Template.Transportation
+            .Select(segment => segment.Mode)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .Take(3));
+
+    private IReadOnlyList<AdventureTemplateActivity> ActivitiesFor(string dayKey) =>
+        Template.Activities.Where(activity => string.Equals(
+            activity.DayKey, dayKey, StringComparison.Ordinal)).ToArray();
+
+    private int DestinationNumber(string destinationKey) =>
+        Template.Destinations
+            .Select((destination, index) => new { destination.Key, Number = index + 1 })
+            .First(item => string.Equals(item.Key, destinationKey, StringComparison.Ordinal))
+            .Number;
+
+    private static string Monogram(string name) => string.Concat(
+        name.Split(' ', StringSplitOptions.RemoveEmptyEntries)
+            .Take(2)
+            .Select(word => char.ToUpperInvariant(word[0])));
 }

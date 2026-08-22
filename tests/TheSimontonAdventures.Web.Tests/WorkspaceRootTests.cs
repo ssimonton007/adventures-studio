@@ -237,7 +237,8 @@ public sealed class WorkspaceRootTests
             });
 
         Assert.Contains("Back to Journey FootSteps", html, StringComparison.Ordinal);
-        Assert.Contains("Journey route", html, StringComparison.Ordinal);
+        Assert.Contains("Places that shape this Journey", html, StringComparison.Ordinal);
+        Assert.Contains("Journey at a glance", html, StringComparison.Ordinal);
         Assert.Contains("Activity ideas", html, StringComparison.Ordinal);
         Assert.Contains("Travel pattern", html, StringComparison.Ordinal);
         Assert.Contains("Stay pattern", html, StringComparison.Ordinal);

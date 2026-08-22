@@ -5,32 +5,83 @@
     <a class="dream-journey__back" href="@DreamPath">← Back to Journey FootSteps</a>
 
     <header class="dream-journey__hero">
-        <p class="dream-journey__eyebrow">Journey FootStep · @Template.DurationDays days</p>
-        <h4 id="dream-journey-title">@Template.Title</h4>
-        @if (!string.IsNullOrWhiteSpace(Template.WorkingDescription))
-        {
-            <p>@Template.WorkingDescription</p>
-        }
-        <p class="dream-journey__attribution">Created by @Template.Attribution</p>
-        <a class="dream-journey__customize" href="@CustomizePath">Customize this Journey</a>
-        <small>Planner will ask you to review dates, origin, route, stays, and activities before creating your private Journey.</small>
+        <div class="dream-journey__hero-copy">
+            <p class="dream-journey__eyebrow">Journey FootStep · @Template.DurationDays days</p>
+            <h4 id="dream-journey-title">@Template.Title</h4>
+            @if (!string.IsNullOrWhiteSpace(Template.WorkingDescription))
+            {
+                <p>@Template.WorkingDescription</p>
+            }
+            <p class="dream-journey__attribution">Created by @Template.Attribution</p>
+            <a class="dream-journey__customize" href="@CustomizePath">Customize this Journey</a>
+            <small>Planner will ask you to review dates, origin, route, stays, and activities before creating your private Journey.</small>
+        </div>
+        <div class="dream-journey__hero-art" aria-label="Illustrative route through @Template.Destinations.Count destinations">
+            <span class="dream-journey__hero-glow" aria-hidden="true"></span>
+            <ol>
+                @foreach (var destination in Template.Destinations)
+                {
+                    <li>
+                        <span aria-hidden="true">@Monogram(destination.Name)</span>
+                        <strong>@destination.Name</strong>
+                    </li>
+                }
+            </ol>
+        </div>
     </header>
 
+    <dl class="dream-journey__facts" aria-label="Journey at a glance">
+        <div><dt>Duration</dt><dd>@Template.DurationDays days</dd></div>
+        <div><dt>Destinations</dt><dd>@Template.Destinations.Count</dd></div>
+        <div><dt>Activity ideas</dt><dd>@Template.Activities.Count</dd></div>
+        <div><dt>Travel style</dt><dd>@TravelStyle</dd></div>
+    </dl>
+
     <section aria-labelledby="dream-route-title">
-        <h5 id="dream-route-title">Journey route</h5>
+        <p class="dream-journey__section-eyebrow">The route</p>
+        <h5 id="dream-route-title">Places that shape this Journey</h5>
         <ol class="dream-journey__route">
             @foreach (var destination in Template.Destinations)
             {
                 <li>
-                    <strong>@destination.Name</strong>
+                    <span class="dream-journey__destination-index" aria-hidden="true">@DestinationNumber(destination.Key)</span>
+                    <div>
+                        <strong>@destination.Name</strong>
+                        @if (!string.IsNullOrWhiteSpace(destination.Guidance))
+                        {
+                            <p>@destination.Guidance</p>
+                        }
+                    </div>
                     <span>Days @(destination.StartDayOffset + 1)–@(destination.EndDayOffset + 1)</span>
                 </li>
             }
         </ol>
     </section>
 
+    @if (Template.Days.Count > 0)
+    {
+        <section aria-labelledby="dream-days-title">
+            <p class="dream-journey__section-eyebrow">A glimpse of the Journey</p>
+            <h5 id="dream-days-title">Days worth looking forward to</h5>
+            <ol class="dream-journey__days">
+                @foreach (var day in PreviewDays)
+                {
+                    <li>
+                        <span>Day @(day.DayOffset + 1)</span>
+                        <strong>@day.Title</strong>
+                        @if (ActivitiesFor(day.Key) is { Count: > 0 } activities)
+                        {
+                            <small>@string.Join(" · ", activities.Select(activity => activity.Title))</small>
+                        }
+                    </li>
+                }
+            </ol>
+        </section>
+    }
+
     <div class="dream-journey__summary">
         <section aria-labelledby="dream-activities-title">
+            <span class="dream-journey__summary-icon" aria-hidden="true">✦</span>
             <h5 id="dream-activities-title">Activity ideas</h5>
             @if (Template.Activities.Count == 0)
             {
@@ -48,6 +99,7 @@
         </section>
 
         <section aria-labelledby="dream-transport-title">
+            <span class="dream-journey__summary-icon" aria-hidden="true">↝</span>
             <h5 id="dream-transport-title">Travel pattern</h5>
             @if (Template.Transportation.Count == 0)
             {
@@ -65,6 +117,7 @@
         </section>
 
         <section aria-labelledby="dream-stays-title">
+            <span class="dream-journey__summary-icon" aria-hidden="true">⌂</span>
             <h5 id="dream-stays-title">Stay pattern</h5>
             @if (Template.Accommodations.Count == 0)
             {
